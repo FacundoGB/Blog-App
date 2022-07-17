@@ -1,10 +1,15 @@
 package com.spring.blogapp.service;
 
 import com.spring.blogapp.dto.PublicationDto;
+import com.spring.blogapp.dto.PublicationResponse;
 import com.spring.blogapp.entity.Publication;
 import com.spring.blogapp.exceptions.ResourceNotFoundException;
 import com.spring.blogapp.repository.PublicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,9 +22,9 @@ public class PublicationServiceImp implements PublicationService{
     private PublicationRepository repository;
 
     @Override
-    public PublicationDto createPublication(PublicationDto dtopublication) {
+    public PublicationDto createPublication(PublicationDto publicationDto) {
 
-        Publication publication = mapEntity(dtopublication);
+        Publication publication = mapEntity(publicationDto);
         Publication newPublication = repository.save(publication);
 
         //we return the object as a dto
@@ -37,14 +42,39 @@ public class PublicationServiceImp implements PublicationService{
      *
      */
     @Override
-    public List<PublicationDto> listAllPublications() {
-        List<Publication> listOfPublications = repository.findAll();
+    public PublicationResponse listAllPublications(int pageN, int pageS, String sortBy, String sortDir) {
+
+        /**
+         * We indicate first that we use Sort
+         * if sortDir is equal to the ascending order and has a name, then we
+         * sort it by the value we parse it ascending.
+         * if not (:) we order it descending.
+         */
+        Sort dir = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageN,pageS,dir);
+        Page<Publication> publications = repository.findAll(pageable);
+
+        //We get the content of the page (with its constraints) and pass it to the whole list.
+        List<Publication> listOfPublications = publications.getContent();
         /*
         to the list we recover from the DB we add it in a stream flow
         and we are mapping it, in which we indicate that the object recieved from
         the list (publicaiton) we will map it into a DTO and show it as a list.
          */
-        return listOfPublications.stream().map(publication -> mapDto(publication)).collect(Collectors.toList());
+        List<PublicationDto> content = listOfPublications.stream().map(publication -> mapDto(publication)).collect(Collectors.toList());
+
+        //once we have our list of publication dto with page number and its size
+        //the response will have as content the list od dtos and the following characteristics
+        PublicationResponse pubResp = new PublicationResponse();
+        pubResp.setContent(content);
+        pubResp.setNumberOfPage(publications.getNumber());
+        pubResp.setSizeOfPage(publications.getSize());
+        pubResp.setTotalElements(publications.getTotalElements());
+        pubResp.setTotalPages(publications.getTotalPages());
+        pubResp.setLast(publications.isLast());
+
+        return pubResp;
 
     }
 
@@ -62,14 +92,14 @@ public class PublicationServiceImp implements PublicationService{
     }
 
     @Override
-    public PublicationDto modifyPublication(PublicationDto dtopublication, long id) {
+    public PublicationDto modifyPublication(PublicationDto publicationDto, long id) {
         Publication publication = repository
                 .findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Publication", "id", id));
 
-        publication.setTitle(dtopublication.getTitle());
-        publication.setDescription(dtopublication.getDescription());
-        publication.setContent(dtopublication.getContent());
+        publication.setTitle(publicationDto.getTitle());
+        publication.setDescription(publicationDto.getDescription());
+        publication.setContent(publicationDto.getContent());
 
         Publication modifiedPublication = repository.save(publication);
 
@@ -87,29 +117,28 @@ public class PublicationServiceImp implements PublicationService{
 
     //In this method we convert entity to DTO
     private PublicationDto mapDto(Publication publication) {
-        PublicationDto dtopublication = new PublicationDto();
+        PublicationDto publicationDto = new PublicationDto();
 
         /*
         To this transfer object DTO we are converting it to a publication entity
-         Once done we return the dtopublication.
+         Once done we return the publicationDto.
          */
-        dtopublication.setId(publication.getId());
-        dtopublication.setTitle(publication.getTitle());
-        dtopublication.setDescription(publication.getDescription());
-        dtopublication.setContent(publication.getContent());
+        publicationDto.setId(publication.getId());
+        publicationDto.setTitle(publication.getTitle());
+        publicationDto.setDescription(publication.getDescription());
+        publicationDto.setContent(publication.getContent());
 
-        return dtopublication;
+        return publicationDto;
     }
 
     //In this method we convert DTO to Entity
-    private Publication mapEntity(PublicationDto dtopublication) {
+    private Publication mapEntity(PublicationDto publicationDto) {
 
         Publication publication = new Publication();
 
-        publication.setId(dtopublication.getId());
-        publication.setTitle(dtopublication.getTitle());
-        publication.setDescription(dtopublication.getDescription());
-        publication.setContent(dtopublication.getContent());
+        publication.setTitle(publicationDto.getTitle());
+        publication.setDescription(publicationDto.getDescription());
+        publication.setContent(publicationDto.getContent());
 
         return publication;
     }
