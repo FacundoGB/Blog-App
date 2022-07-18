@@ -3,12 +3,11 @@ package com.spring.blogapp.controller;
 import com.spring.blogapp.dto.PublicationDto;
 import com.spring.blogapp.dto.PublicationResponse;
 import com.spring.blogapp.service.PublicationService;
+import com.spring.blogapp.util.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/publications")
@@ -18,10 +17,10 @@ public class PublicationController {
     PublicationService service;
 
     @GetMapping
-    public PublicationResponse listAllPublications(@RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageN,
-                                                   @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageS,
-                                                   @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
-                                                   @RequestParam(value = "sortDir", defaultValue = "asc", required = false) String sortDir) {
+    public PublicationResponse listAllPublications(@RequestParam(value = "pageNo", defaultValue = AppConstants.NUMBER_OF_PAGE_DEFAULT, required = false) int pageN,
+                                                   @RequestParam(value = "pageSize", defaultValue = AppConstants.SIZE_OF_PAGE_DEFAULT, required = false) int pageS,
+                                                   @RequestParam(value = "sortBy", defaultValue = AppConstants.ORDER_BY_DEFECT_DEFAULT, required = false) String sortBy,
+                                                   @RequestParam(value = "sortDir", defaultValue = AppConstants.ORDER_BY_DIRECTION_DEFAULT, required = false) String sortDir) {
         return service.listAllPublications(pageN,pageS,sortBy,sortDir);
     }
 
