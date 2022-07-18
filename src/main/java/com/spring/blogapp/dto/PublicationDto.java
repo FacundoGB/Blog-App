@@ -23,7 +23,7 @@ public class PublicationDto {
     @Size(min = 10, message = "Publications description is too small. Use at least 3 letters")
     private String description;
 
-    @NotEmpty
+    @NotEmpty(message = "Name should not be empty or null")
     private String content;
 
     private Set<Comment> comments;
