@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 public class PublicationController {
 
     @Autowired
-    PublicationService service;
+    private PublicationService service;
 
     @GetMapping
     public PublicationResponse listAllPublications(@RequestParam(value = "pageNo", defaultValue = AppConstants.NUMBER_OF_PAGE_DEFAULT, required = false) int pageN,
