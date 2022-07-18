@@ -3,8 +3,6 @@ package com.spring.blogapp.service;
 import com.spring.blogapp.dto.PublicationDto;
 import com.spring.blogapp.dto.PublicationResponse;
 
-import java.util.List;
-
 public interface PublicationService {
 
     public PublicationDto createPublication(PublicationDto publicationDto);
