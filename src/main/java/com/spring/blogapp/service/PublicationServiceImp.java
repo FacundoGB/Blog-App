@@ -5,6 +5,7 @@ import com.spring.blogapp.dto.PublicationResponse;
 import com.spring.blogapp.entity.Publication;
 import com.spring.blogapp.exceptions.ResourceNotFoundException;
 import com.spring.blogapp.repository.PublicationRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +18,9 @@ import java.util.stream.Collectors;
 
 @Service
 public class PublicationServiceImp implements PublicationService{
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Autowired
     private PublicationRepository repository;
@@ -117,29 +121,17 @@ public class PublicationServiceImp implements PublicationService{
 
     //In this method we convert entity to DTO
     private PublicationDto mapDto(Publication publication) {
-        PublicationDto publicationDto = new PublicationDto();
-
-        /*
-        To this transfer object DTO we are converting it to a publication entity
-         Once done we return the publicationDto.
-         */
-        publicationDto.setId(publication.getId());
-        publicationDto.setTitle(publication.getTitle());
-        publicationDto.setDescription(publication.getDescription());
-        publicationDto.setContent(publication.getContent());
-
+        //we remove this mapping method to replace it with modelmapper
+        //we map the publication object to its destination type: publication dto class
+        PublicationDto publicationDto = modelMapper.map(publication, PublicationDto.class);
         return publicationDto;
     }
 
     //In this method we convert DTO to Entity
     private Publication mapEntity(PublicationDto publicationDto) {
-
-        Publication publication = new Publication();
-
-        publication.setTitle(publicationDto.getTitle());
-        publication.setDescription(publicationDto.getDescription());
-        publication.setContent(publicationDto.getContent());
-
+        //we remove this mapping method to replace it with modelmapper
+        //we map the dto object to its destination type: publication class
+        Publication publication = modelMapper.map(publicationDto, Publication.class);
         return publication;
     }
 }
