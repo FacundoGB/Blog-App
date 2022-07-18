@@ -1,6 +1,9 @@
 package com.spring.blogapp.dto;
 
+import com.spring.blogapp.entity.Comment;
 import lombok.*;
+
+import java.util.Set;
 
 @Getter @Setter @ToString
 @AllArgsConstructor
@@ -11,4 +14,5 @@ public class PublicationDto {
     private String title;
     private String description;
     private String content;
+    private Set<Comment> comments;
 }
