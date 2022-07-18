@@ -7,6 +7,7 @@ import com.spring.blogapp.exceptions.BlogAppException;
 import com.spring.blogapp.exceptions.ResourceNotFoundException;
 import com.spring.blogapp.repository.CommentRepository;
 import com.spring.blogapp.repository.PublicationRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,8 +19,9 @@ import java.util.stream.Collectors;
 public class CommentServiceImp implements CommentService{
 
     @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
     private CommentRepository commentRepository;
-
     @Autowired
     private PublicationRepository publicationRepository;
 
@@ -96,23 +98,13 @@ public class CommentServiceImp implements CommentService{
 
     // Entity to DTO
     private CommentDto mapDTO(Comment comment) {
-        CommentDto commentDto = new CommentDto();
-        commentDto.setId(comment.getId());
-        commentDto.setName(comment.getName());
-        commentDto.setEmail(comment.getEmail());
-        commentDto.setBody(comment.getBody());
-
+        CommentDto commentDto = modelMapper.map(comment, CommentDto.class);
         return commentDto;
     }
 
     // DTO to Entity
     private Comment mapEntity(CommentDto commentDto) {
-        Comment comment = new Comment();
-        comment.setId(commentDto.getId());
-        comment.setName(commentDto.getName());
-        comment.setEmail(commentDto.getEmail());
-        comment.setBody(commentDto.getBody());
-
+        Comment comment = modelMapper.map(commentDto, Comment.class);
         return comment;
     }
 }
