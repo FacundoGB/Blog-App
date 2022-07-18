@@ -24,6 +24,9 @@ public class Publication {
     @Column(name = "content", nullable = false)
     private String content;
 
+    /*
+    JsonBackReference addresses infinite recursion in bidirectional references
+     */
     @JsonBackReference
     @OneToMany(mappedBy = "publication", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Comment> comments = new HashSet<>();
