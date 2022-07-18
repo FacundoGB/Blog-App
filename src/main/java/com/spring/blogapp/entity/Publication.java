@@ -27,6 +27,7 @@ public class Publication {
     private Set<Comment> comments = new HashSet<>();
 
     //once a publication is removed all asociated data (comments) is removed aswell (orphanRemoval)
+    //This line is to save myself of git rebase and git ammend for message
 }
 
 /**
