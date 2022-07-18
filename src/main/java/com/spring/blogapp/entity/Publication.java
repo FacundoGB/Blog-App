@@ -3,6 +3,8 @@ package com.spring.blogapp.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor @NoArgsConstructor @ToString
@@ -21,7 +23,10 @@ public class Publication {
     @Column(name = "content", nullable = false)
     private String content;
 
+    @OneToMany(mappedBy = "publication", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Comment> comments = new HashSet<>();
 
+    //once a publication is removed all asociated data (comments) is removed aswell (orphanRemoval)
 }
 
 /**
