@@ -7,6 +7,7 @@ import com.spring.blogapp.util.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -31,12 +32,14 @@ public class PublicationController {
         return ResponseEntity.ok(service.showPublicationById(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<PublicationDto> savePublication(@Valid @RequestBody PublicationDto publicDto){
         return  new ResponseEntity<>(service.createPublication(publicDto), HttpStatus.CREATED);
 
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<PublicationDto> modifyPublication(@Valid @RequestBody PublicationDto publicDto, @PathVariable(name = "id") long id) {
         PublicationDto response = service.modifyPublication(publicDto, id);
@@ -44,6 +47,7 @@ public class PublicationController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePublication(@PathVariable(name = "id")long id) {
         service.deletePublication(id);
