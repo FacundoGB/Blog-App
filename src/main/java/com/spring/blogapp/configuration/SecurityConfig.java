@@ -49,9 +49,23 @@ public class SecurityConfig {
         return http.build();
     }
 
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+    @Bean
+    protected InMemoryUserDetailsManager configureAuthentication(){
+        UserDetails Juan = User.builder().username("Juan")
+                .password(passwordEncoder().encode("password")).roles("USER").build();
+        UserDetails Susana = User.builder().username("admin")
+                .password(passwordEncoder().encode("admin")).roles("ADMIN").build();
+
+        return new InMemoryUserDetailsManager(Juan,Susana);
+    }
+
+
+   /* public void configure(AuthenticationManagerBuilder auth) throws Exception {
         UserDetails Juan = User.builder().username("Juan")
                         .password(passwordEncoder().encode("password")).roles("USER").build();
         auth.inMemoryAuthentication().withUser(Juan);
-    }
+        UserDetails Susana = User.builder().username("Susana")
+                .password(passwordEncoder().encode("password")).roles("ADMIN").build();
+        auth.inMemoryAuthentication().withUser(Juan);
+    }*/
 }
