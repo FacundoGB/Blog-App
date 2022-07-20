@@ -5,14 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -28,8 +28,6 @@ public class SecurityConfig {
         return new Argon2PasswordEncoder(16, 32, 1, 1 << 18, 4);
     }
 
-
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -40,6 +38,8 @@ public class SecurityConfig {
                 .authorizeRequests()
                 // authenticate requests to endpoint
                 .antMatchers(HttpMethod.GET, "/api/**").permitAll()
+                //authenticate requests to endpoint auth
+                .antMatchers(("/api/auth/**")).permitAll()
                 // allow all other requests
                 .anyRequest().authenticated()
                 .and()
@@ -51,6 +51,17 @@ public class SecurityConfig {
     }
 
     @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder());
+
+    }
+
+
+    /* @Bean
     protected InMemoryUserDetailsManager configureAuthentication(){
         UserDetails Juan = User.builder().username("Juan")
                 .password(passwordEncoder().encode("password")).roles("USER").build();
@@ -59,14 +70,6 @@ public class SecurityConfig {
 
         return new InMemoryUserDetailsManager(Juan,Susana);
     }
+*/
 
-
-   /* public void configure(AuthenticationManagerBuilder auth) throws Exception {
-        UserDetails Juan = MyUser.builder().username("Juan")
-                        .password(passwordEncoder().encode("password")).roles("USER").build();
-        auth.inMemoryAuthentication().withUser(Juan);
-        UserDetails Susana = MyUser.builder().username("Susana")
-                .password(passwordEncoder().encode("password")).roles("ADMIN").build();
-        auth.inMemoryAuthentication().withUser(Juan);
-    }*/
 }
